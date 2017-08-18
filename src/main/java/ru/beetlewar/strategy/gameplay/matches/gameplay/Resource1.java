@@ -1,4 +1,4 @@
-package ru.beetlewar.strategy.gameplay.matches.gameplay.players;
+package ru.beetlewar.strategy.gameplay.matches.gameplay;
 
 public class Resource1 {
     private final int value;

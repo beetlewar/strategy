@@ -1,8 +1,7 @@
-package ru.beetlewar.strategy.gameplay.matches.gameplay.matches;
+package ru.beetlewar.strategy.gameplay.matches.gameplay.players;
 
-import ru.beetlewar.strategy.gameplay.matches.gameplay.players.PlayerNumber;
-import ru.beetlewar.strategy.gameplay.matches.gameplay.players.Resource1;
-import ru.beetlewar.strategy.gameplay.matches.gameplay.players.Resource2;
+import ru.beetlewar.strategy.gameplay.matches.gameplay.Resource1;
+import ru.beetlewar.strategy.gameplay.matches.gameplay.Resource2;
 
 public class CreatePlayer {
     public final PlayerNumber number;
