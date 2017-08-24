@@ -1,4 +1,4 @@
-package ru.beetlewar.strategy.gameplay.actors;
+package ru.beetlewar.strategy.infrastructure.ioc;
 
 import akka.actor.Actor;
 import akka.actor.IndirectActorProducer;

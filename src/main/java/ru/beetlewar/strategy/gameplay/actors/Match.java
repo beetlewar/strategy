@@ -27,18 +27,11 @@ public class Match extends AbstractActor {
     @Override
     public Receive createReceive() {
         return receiveBuilder()
-                .match(CreateMap.class, cm -> createMap(cm))
                 .match(CreatePlayer.class, cp -> createPlayer(cp))
                 .match(StartMatch.class, sm -> start(sm))
                 .match(MatchTick.class, mt -> tick())
                 .match(PlayerDestroyed.class, pd -> destroyPlayer(pd))
                 .build();
-    }
-
-    private void createMap(CreateMap cm) {
-        ActorRef actorRef = getContext().actorOf(Map.props(cm.size), "map");
-
-        sender().tell(actorRef, self());
     }
 
     private void createPlayer(CreatePlayer cp) {

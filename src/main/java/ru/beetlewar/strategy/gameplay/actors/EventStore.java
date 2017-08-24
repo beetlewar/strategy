@@ -1,24 +1,33 @@
 package ru.beetlewar.strategy.gameplay.actors;
 
-import akka.actor.AbstractActor;
 import akka.actor.Props;
+import akka.actor.UntypedAbstractActor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import ru.beetlewar.strategy.gameplay.port.IEventsRepository;
 
-public class EventStore extends AbstractActor {
+import java.util.ArrayList;
+
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+public class EventStore extends UntypedAbstractActor {
     public static Props props() {
         return Props.create(EventStore.class, () -> new EventStore());
     }
 
-    private EventStore(){
+    @Autowired
+    private IEventsRepository eventsRepository;
+
+    private EventStore() {
     }
 
     @Override
-    public Receive createReceive() {
-        return receiveBuilder()
-                .matchAny(e -> handleEvent(e))
-                .build();
-    }
+    public void onReceive(Object o) throws Throwable {
+        ArrayList<Object> events = new ArrayList<>();
+        events.add(o);
 
-    private void handleEvent(Object evt) {
-        int i = 3;
+        eventsRepository.saveEvents(events);
     }
 }

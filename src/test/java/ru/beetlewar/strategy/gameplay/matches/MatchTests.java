@@ -6,34 +6,47 @@ import akka.pattern.Patterns;
 import akka.util.Timeout;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.beetlewar.strategy.contracts.events.MatchComplete;
 import ru.beetlewar.strategy.gameplay.actors.*;
+import ru.beetlewar.strategy.gameplay.adapter.EventsRepository;
 import ru.beetlewar.strategy.gameplay.assets.Resource1;
 import ru.beetlewar.strategy.gameplay.assets.Resource2;
 import ru.beetlewar.strategy.gameplay.geometry.Height;
 import ru.beetlewar.strategy.gameplay.geometry.Size;
 import ru.beetlewar.strategy.gameplay.geometry.Width;
-import ru.beetlewar.strategy.gameplay.messages.CreateMap;
 import ru.beetlewar.strategy.gameplay.messages.CreatePlayer;
 import ru.beetlewar.strategy.gameplay.messages.DestroyPlayer;
 import ru.beetlewar.strategy.gameplay.messages.StartMatch;
+import ru.beetlewar.strategy.gameplay.port.IEventsRepository;
+import ru.beetlewar.strategy.infrastructure.ioc.AppConfiguration;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
 
 import java.util.concurrent.TimeUnit;
 
-import static ru.beetlewar.strategy.gameplay.actors.SpringExtension.SPRING_EXTENSION_PROVIDER;
+import static ru.beetlewar.strategy.infrastructure.ioc.SpringExtension.SPRING_EXTENSION_PROVIDER;
 
 public class MatchTests {
+    private final AnnotationConfigApplicationContext ctx;
+
+    private final ActorSystem system;
+
+    public MatchTests() {
+        ctx = new AnnotationConfigApplicationContext("ru.beetlewar.strategy");
+
+        AppConfiguration cfg = ctx.getBean(AppConfiguration.class);
+
+        system = cfg.actorSystem();
+    }
+
     @Test
     public void test() throws Exception {
-        ActorSystem system = ActorSystem.create("test");
 
-        ActorRef eventsRef = system.actorOf(EventStore.props(), "events");
+        ActorRef eventsRef = system.actorOf(SPRING_EXTENSION_PROVIDER.get(system).props("eventStore"), "eventStore");
 
         ActorRef matchRef = system.actorOf(Match.props(eventsRef), "match");
-
-        initMap(new Size(new Width(100), new Height(100)), matchRef);
 
         initPlayer(new PlayerNumber(1), matchRef);
 
@@ -43,14 +56,7 @@ public class MatchTests {
 
         player2Ref.tell(new DestroyPlayer(), ActorRef.noSender());
 
-        waitMatchComplete(matchRef);
-    }
-
-    private static void initMap(Size size, ActorRef matchRef) throws Exception {
-        Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
-        Duration dur = Duration.create(5, TimeUnit.SECONDS);
-
-        Await.result(Patterns.ask(matchRef, new CreateMap(size), timeout), dur);
+        Assert.assertTrue(waitMatchComplete());
     }
 
     private static ActorRef initPlayer(
@@ -72,38 +78,19 @@ public class MatchTests {
         Await.result(Patterns.ask(matchActor, new StartMatch(60), timeout), dur);
     }
 
-    private static void waitMatchComplete(ActorRef matchActor) throws Exception {
-        Duration dur = Duration.create(5, TimeUnit.SECONDS);
+    private boolean waitMatchComplete() throws Exception {
+        for (int i = 0; i < 10; i++) {
+            IEventsRepository repo = ctx.getBean(IEventsRepository.class);
 
-        Timeout timeout = new Timeout(5, TimeUnit.SECONDS);
-
-        for(int i = 0; i < 10; i++) {
-//            Object matchStatus = Await.result(Patterns.ask(matchActor, new RequestMatchStatus(), timeout), dur);
-//
-//            if (matchStatus instanceof MatchComplete) {
-//                return;
-//            }
+            for (Object event : repo.all()) {
+                if (event instanceof MatchComplete) {
+                    return true;
+                }
+            }
 
             Thread.sleep(1000);
         }
 
-        Assert.fail();
-    }
-
-    @Test
-    public void test2() throws Exception{
-        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext("ru.beetlewar.strategy");
-
-        AppConfiguration cfg = ctx.getBean(AppConfiguration.class);
-
-        ActorSystem system = cfg.actorSystem();
-
-        ActorRef actor =system.actorOf(SPRING_EXTENSION_PROVIDER.get(system).props("actorWithInjection"), "injActor");
-
-        actor.tell(new ActorWithInjection.Message("Hello from test!"), ActorRef.noSender());
-
-        ctx.close();
-
-        Thread.sleep(1000000);
+        return false;
     }
 }
