@@ -6,17 +6,23 @@ import akka.pattern.Patterns;
 import akka.util.Timeout;
 import org.junit.Assert;
 import org.junit.Test;
-import ru.beetlewar.strategy.gameplay.actors.EventStore;
-import ru.beetlewar.strategy.gameplay.actors.Match;
-import ru.beetlewar.strategy.gameplay.actors.PlayerNumber;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.beetlewar.strategy.gameplay.actors.*;
 import ru.beetlewar.strategy.gameplay.assets.Resource1;
 import ru.beetlewar.strategy.gameplay.assets.Resource2;
-import ru.beetlewar.strategy.gameplay.geometry.*;
-import ru.beetlewar.strategy.gameplay.messages.*;
+import ru.beetlewar.strategy.gameplay.geometry.Height;
+import ru.beetlewar.strategy.gameplay.geometry.Size;
+import ru.beetlewar.strategy.gameplay.geometry.Width;
+import ru.beetlewar.strategy.gameplay.messages.CreateMap;
+import ru.beetlewar.strategy.gameplay.messages.CreatePlayer;
+import ru.beetlewar.strategy.gameplay.messages.DestroyPlayer;
+import ru.beetlewar.strategy.gameplay.messages.StartMatch;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
 
 import java.util.concurrent.TimeUnit;
+
+import static ru.beetlewar.strategy.gameplay.actors.SpringExtension.SPRING_EXTENSION_PROVIDER;
 
 public class MatchTests {
     @Test
@@ -82,5 +88,22 @@ public class MatchTests {
         }
 
         Assert.fail();
+    }
+
+    @Test
+    public void test2() throws Exception{
+        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext("ru.beetlewar.strategy");
+
+        AppConfiguration cfg = ctx.getBean(AppConfiguration.class);
+
+        ActorSystem system = cfg.actorSystem();
+
+        ActorRef actor =system.actorOf(SPRING_EXTENSION_PROVIDER.get(system).props("actorWithInjection"), "injActor");
+
+        actor.tell(new ActorWithInjection.Message("Hello from test!"), ActorRef.noSender());
+
+        ctx.close();
+
+        Thread.sleep(1000000);
     }
 }

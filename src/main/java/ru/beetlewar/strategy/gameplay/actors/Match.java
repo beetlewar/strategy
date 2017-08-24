@@ -3,7 +3,7 @@ package ru.beetlewar.strategy.gameplay.actors;
 import akka.actor.AbstractActor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
-import ru.beetlewar.startegy.contracts.events.MatchComplete;
+import ru.beetlewar.strategy.contracts.events.MatchComplete;
 import ru.beetlewar.strategy.gameplay.messages.*;
 import scala.concurrent.duration.FiniteDuration;
 
