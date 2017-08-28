@@ -1,4 +1,4 @@
-package ru.beetlewar.strategy.gameplay.matches;
+package ru.beetlewar.strategy.gameplay.actors;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
@@ -6,16 +6,10 @@ import akka.pattern.Patterns;
 import akka.util.Timeout;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.beetlewar.strategy.contracts.events.MatchComplete;
-import ru.beetlewar.strategy.gameplay.actors.*;
-import ru.beetlewar.strategy.gameplay.adapter.EventsRepository;
 import ru.beetlewar.strategy.gameplay.assets.Resource1;
 import ru.beetlewar.strategy.gameplay.assets.Resource2;
-import ru.beetlewar.strategy.gameplay.geometry.Height;
-import ru.beetlewar.strategy.gameplay.geometry.Size;
-import ru.beetlewar.strategy.gameplay.geometry.Width;
 import ru.beetlewar.strategy.gameplay.messages.CreatePlayer;
 import ru.beetlewar.strategy.gameplay.messages.DestroyPlayer;
 import ru.beetlewar.strategy.gameplay.messages.StartMatch;
@@ -42,7 +36,7 @@ public class MatchTests {
     }
 
     @Test
-    public void test() throws Exception {
+    public void should_complete_match_when_player_destroyed() throws Exception {
 
         ActorRef eventsRef = system.actorOf(SPRING_EXTENSION_PROVIDER.get(system).props("eventStore"), "eventStore");
 
