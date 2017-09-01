@@ -2,6 +2,7 @@ package ru.beetlewar.strategy.server.match.application;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.beetlewar.strategy.contract.MatchId;
 import ru.beetlewar.strategy.server.match.domain.IMatchEventsConsumer;
 import ru.beetlewar.strategy.server.match.domain.IMatchEventsRepository;
 
@@ -16,7 +17,7 @@ public class MatchService implements IMatchService {
     }
 
     @Override
-    public void subscribeMatchEvents(IMatchEventsConsumer eventsConsumer){
-        matchEventsRepository.subscribeMatchEventsConsumer(eventsConsumer);
+    public void subscribeMatchEvents(MatchId matchId, IMatchEventsConsumer eventsConsumer){
+        matchEventsRepository.subscribeMatchEventsConsumer(matchId, eventsConsumer);
     }
 }

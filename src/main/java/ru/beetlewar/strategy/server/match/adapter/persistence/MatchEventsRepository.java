@@ -1,6 +1,7 @@
 package ru.beetlewar.strategy.server.match.adapter.persistence;
 
 import org.springframework.stereotype.Component;
+import ru.beetlewar.strategy.contract.MatchId;
 import ru.beetlewar.strategy.server.match.domain.IMatchEventsConsumer;
 import ru.beetlewar.strategy.server.match.domain.IMatchEventsRepository;
 import ru.beetlewar.strategy.server.match.domain.IMatchEventsConsumer;
@@ -19,7 +20,7 @@ public class MatchEventsRepository implements IMatchEventsRepository {
     }
 
     @Override
-    public void saveEvents(Iterable<Object> events) {
+    public void saveEvents(Iterable events) {
         for (Object evt : events) {
             this.events.add(evt);
         }
@@ -40,7 +41,7 @@ public class MatchEventsRepository implements IMatchEventsRepository {
     }
 
     @Override
-    public void subscribeMatchEventsConsumer(IMatchEventsConsumer matchEventsConsumer) {
+    public void subscribeMatchEventsConsumer(MatchId matchId, IMatchEventsConsumer matchEventsConsumer) {
         eventConsumers.add(matchEventsConsumer);
 
         fireEventsFor(matchEventsConsumer);

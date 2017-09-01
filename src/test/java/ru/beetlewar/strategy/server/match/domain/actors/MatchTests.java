@@ -4,19 +4,20 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.beetlewar.strategy.contract.MatchId;
 import ru.beetlewar.strategy.server.infrastructure.AppConfiguration;
 import ru.beetlewar.strategy.server.match.assets.Resource1;
 import ru.beetlewar.strategy.server.match.assets.Resource2;
-import ru.beetlewar.strategy.server.match.contracts.events.MatchComplete;
+import ru.beetlewar.strategy.contract.events.MatchComplete;
 import ru.beetlewar.strategy.server.match.domain.IMatchEventsRepository;
 import ru.beetlewar.strategy.server.match.domain.messages.CreatePlayer;
 import ru.beetlewar.strategy.server.match.domain.messages.DestroyPlayer;
-import ru.beetlewar.strategy.server.match.domain.messages.StartMatch;
-import ru.beetlewar.strategy.server.infrastructure.AppConfiguration;
-import ru.beetlewar.strategy.server.match.domain.IMatchEventsRepository;
 import ru.beetlewar.strategy.server.match.domain.messages.StartMatch;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
@@ -43,7 +44,7 @@ public class MatchTests {
 
         ActorRef eventsRef = system.actorOf(SPRING_EXTENSION_PROVIDER.get(system).props("eventStore"), "eventStore");
 
-        ActorRef matchRef = system.actorOf(Match.props(eventsRef), "match");
+        ActorRef matchRef = system.actorOf(Match.props(new MatchId(1), eventsRef), "match");
 
         initPlayer(new PlayerNumber(1), matchRef);
 

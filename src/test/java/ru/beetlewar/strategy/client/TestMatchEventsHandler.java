@@ -21,7 +21,7 @@ public class TestMatchEventsHandler implements IMatchEventsHandler {
     public void waitEventsTobeHandled() throws Exception {
         boolean allEventsHandled = true;
 
-        for(int i = 0; i < 10; i++) {
+        for(int i = 0; i < 5; i++) {
             allEventsHandled = true;
 
             for (Object evt : expectedEvents) {

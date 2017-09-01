@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import ru.beetlewar.strategy.contract.HttpPaths;
+import ru.beetlewar.strategy.contract.MatchId;
 
 import java.util.ArrayList;
 
@@ -18,7 +20,7 @@ public class TestMatchSseController {
         expectedEvents.add(evt);
     }
 
-    @RequestMapping(path = "/api/matches/{matchId}", method = RequestMethod.GET)
+    @RequestMapping(path = HttpPaths.MatchEvents, method = RequestMethod.GET)
     public SseEmitter subscribeEvents(@PathVariable long matchId) throws Exception {
         SseEmitter emitter = new SseEmitter();
 

@@ -16,16 +16,18 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
 public class MatchSseEventsClient {
+    private MatchId matchId;
     private final URI uri;
     private final IMatchEventsHandler matchEventsListener;
 
-    public MatchSseEventsClient(URI uri, IMatchEventsHandler matchEventsListener) {
-        this.uri = uri;
+    public MatchSseEventsClient(MatchId matchId, URI baseAddress, IMatchEventsHandler matchEventsListener) {
+        this.matchId = matchId;
+        this.uri = baseAddress.resolve("/api/matches/").resolve(matchId.toString());
         this.matchEventsListener = matchEventsListener;
     }
 
-    public Future subscribeForMatchEvents(MatchId matchId) {
-        FutureTask task = new FutureTask(() -> {
+    public Future subscribeForMatchEvents() {
+        FutureTask task = new FutureTask<>(() -> {
             Client client = ClientBuilder.newBuilder().register(SseFeature.class).build();
 
             WebTarget target = client.target(uri);
